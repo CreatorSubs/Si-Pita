@@ -1,49 +1,50 @@
 @extends('layouts.main')
 
-@section('title', 'Tambah Admin Baru')
+@section('title', 'Buat Akun Admin')
 
 @section('content')
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-6">
-            <div class="card card-custom p-4 shadow-sm">
-                <h5 class="fw-bold mb-3 text-center text-dark">Tambah Akun Admin Baru</h5>
-                
-                @if ($errors->any())
-                    <div class="alert alert-danger">
-                        <ul class="mb-0">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
-                @endif
+<div class="container d-flex justify-content-center py-4">
+    <div class="card p-4 p-md-5 shadow-sm w-100" style="max-width: 600px; background-color: #eef2ff; border: 2px solid #000000; border-radius: 28px;">
+        <h4 class="fw-bold text-dark text-center mb-4">Tambah Akun Admin Baru</h4>
 
-                <form action="{{ route('admin.users.store') }}" method="POST">
-                    @csrf
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Nama Lengkap</label>
-                        <input type="text" name="name" class="form-control rounded-pill px-3" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Email</label>
-                        <input type="email" name="email" class="form-control rounded-pill px-3" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Password</label>
-                        <input type="password" name="password" class="form-control rounded-pill px-3" required>
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label fw-semibold">Konfirmasi Password</label>
-                        <input type="password" name="password_confirmation" class="form-control rounded-pill px-3" required>
-                    </div>
-                    <div class="d-flex justify-content-between mt-4">
-                        <a href="{{ route('admin.dashboard') }}" class="btn btn-secondary rounded-pill px-4">Batal</a>
-                        <button type="submit" class="btn btn-primary-custom text-white rounded-pill px-4">Buat Akun</button>
-                    </div>
-                </form>
+        @if($errors->any())
+            <div class="alert alert-danger rounded-3 mb-3">
+                <ul class="mb-0 ps-3">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
             </div>
-        </div>
+        @endif
+
+        <form action="{{ route('admin.user.store') }}" method="POST">
+            @csrf
+            <div class="mb-3">
+                <label class="form-label fw-bold text-dark">Nama Lengkap</label>
+                <input type="text" name="name" class="form-control border-dark rounded-pill py-2 px-3" value="{{ old('name') }}" placeholder="Masukkan nama..." required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold text-dark">Email</label>
+                <input type="email" name="email" class="form-control border-dark rounded-pill py-2 px-3" value="{{ old('email') }}" placeholder="Masukkan email..." required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label fw-bold text-dark">Password</label>
+                <input type="password" name="password" class="form-control border-dark rounded-pill py-2 px-3" placeholder="Minimal 8 karakter" required>
+            </div>
+
+            <div class="mb-4">
+                <label class="form-label fw-bold text-dark">Konfirmasi Password</label>
+                <input type="password" name="password_confirmation" class="form-control border-dark rounded-pill py-2 px-3" placeholder="Ulangi password" required>
+            </div>
+
+            <div class="d-grid gap-2">
+                <button type="submit" class="btn btn-primary rounded-pill py-2 fw-bold" style="background-color: #2563eb; border: none;">
+                    Simpan Akun
+                </button>
+            </div>
+        </form>
     </div>
 </div>
 @endsection

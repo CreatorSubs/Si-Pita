@@ -3,23 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SI-PITA - @yield('title', 'Diskominfo')</title>
-    @vite(['resources/sass/app.scss', 'resources/js/app.js'])
+    <title>@yield('title', 'Si-Pita')</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
     <style>
-        body { background-color: #eef2ff; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
-        .card-custom { background: #c7d2fe; border-radius: 20px; border: none; }
-        .btn-primary-custom { background-color: #3b82f6; border: none; border-radius: 10px; padding: 10px 24px; font-weight: 600; }
-        .btn-primary-custom:hover { background-color: #2563eb; }
+        body {
+            background-color: #eef2ff;
+            min-height: 100vh;
+        }
+        .navbar-custom {
+            background-color: #ffffff;
+            border-bottom: 2px solid #000000;
+        }
     </style>
-    @stack('styles')
 </head>
-<body class="d-flex flex-column min-vh-100">
-    @include('components.navbar')
+<body>
+
+    <!-- Top Navbar dengan Tombol Hamburger -->
+    <nav class="navbar navbar-custom px-3 py-2 sticky-top">
+        <div class="container-fluid d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-2">
+                <!-- Tombol Hamburger -->
+                <button class="btn btn-light border-dark" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas" aria-controls="sidebarOffcanvas">
+                    <i class="bi bi-list fs-4"></i>
+                </button>
+                <span class="fs-4 fw-bold text-primary mb-0 ms-2">Si-Pita Admin</span>
+            </div>
+            
+            <div>
+                <a href="{{ route('landing') }}" class="btn btn-outline-dark btn-sm rounded-pill fw-semibold">
+                    <i class="bi bi-globe me-1"></i> Ke Halaman Publik
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Sidebar Offcanvas (Bisa Buka - Tutup / Hamburger Menu) -->
     @include('components.sidebar')
-    <main class="flex-grow-1 d-flex align-items-center justify-content-center py-4">
+
+    <!-- Content Area -->
+    <main class="p-4">
         @yield('content')
     </main>
-    @include('components.footer')
-    @stack('scripts')
+
+    <!-- Bootstrap 5 JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

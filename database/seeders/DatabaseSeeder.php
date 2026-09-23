@@ -13,7 +13,7 @@ class DatabaseSeeder extends Seeder
         User::updateOrCreate(
             ['email' => 'admin@diskominfo.go.id'],
             [
-                'name' => 'Admin Utama SI-PITA',
+                'name' => 'Admint',
                 'password' => Hash::make('password123'), // Ganti password sesuai kebutuhan
             ]
         );

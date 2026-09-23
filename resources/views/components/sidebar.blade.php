@@ -1,36 +1,62 @@
-<div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarMenu" style="width: 280px; background-color: #ffffff;">
-    <div class="offcanvas-header border-bottom p-3">
-        <h5 class="offcanvas-title fw-bold text-primary">Menu Admin</h5>
+@php
+    $currentUserEmail = auth()->user() ? auth()->user()->email : session('user_email', 'admin@diskominfo.go.id');
+    $isOwner = strtolower($currentUserEmail) === 'admin@diskominfo.go.id';
+@endphp
+
+<div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarOffcanvas" aria-labelledby="sidebarOffcanvasLabel" style="width: 290px;">
+    <div class="offcanvas-header border-bottom border-dark">
+        <div>
+            <h5 class="offcanvas-title fw-bold text-primary mb-0" id="sidebarOffcanvasLabel">Si-Pita Admin</h5>
+            @if($isOwner)
+                <small class="badge bg-danger text-white rounded-pill mt-1">👑 Mode Owner / Super Admin</small>
+            @endif
+        </div>
         <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
     </div>
-    <div class="offcanvas-body d-flex flex-column justify-content-between p-4">
-        <div>
-            <!-- Info User Login -->
-            <div class="text-center mb-4 p-3 rounded-3" style="background-color: #f0f4ff;">
-                <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center mx-auto mb-2 fw-bold" style="width: 50px; height: 50px; font-size: 20px;">
-                    {{ strtoupper(substr(Auth::user()->name ?? 'A', 0, 1)) }}
-                </div>
-                <h6 class="fw-bold text-dark m-0">{{ Auth::user()->name ?? 'Admin SI-PITA' }}</h6>
-                <small class="text-muted">{{ Auth::user()->email ?? 'admin@diskominfo.go.id' }}</small>
-            </div>
-
-            <!-- Navigasi 3 Fitur Utama Admin -->
-            <div class="d-grid gap-2">
-                <a href="{{ route('admin.certificate.create') }}" class="btn btn-primary-custom text-white text-start d-flex align-items-center gap-2">
-                    ➕ <span>Buat Sertifikat</span>
+    
+    <div class="offcanvas-body d-flex flex-column justify-content-between">
+        <ul class="nav nav-pills flex-column gap-2">
+            <li class="nav-item">
+                <a href="{{ route('admin.certificate.create') }}" class="nav-link {{ request()->routeIs('admin.certificate.create') ? 'active bg-primary text-white' : 'text-dark fw-semibold' }}">
+                    <i class="bi bi-plus-square me-2"></i> Buat Sertifikat
                 </a>
-                <a href="{{ route('admin.certificate.index') }}" class="btn btn-primary-custom text-white text-start d-flex align-items-center gap-2">
-                    📋 <span>Cek Sertifikat</span>
+            </li>
+            <li class="nav-item">
+                <a href="{{ route('admin.certificate.show_all') }}" class="nav-link {{ request()->routeIs('admin.certificate.show_all') ? 'active bg-primary text-white' : 'text-dark fw-semibold' }}">
+                    <i class="bi bi-file-earmark-text me-2"></i> Data Sertifikat
                 </a>
-            </div>
-        </div>
+            </li>
 
-        <!-- Tombol Logout -->
-        <div class="pt-3 border-top">
+            <!-- MENU KHUSUS OWNER (admin@diskominfo.go.id) -->
+            @if($isOwner)
+                <li class="nav-item mt-2">
+                    <small class="text-uppercase text-muted fw-bold px-2">Menu Owner</small>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('admin.certificate.history') }}" class="nav-link {{ request()->routeIs('admin.certificate.history') ? 'active bg-primary text-white' : 'text-dark fw-semibold' }}">
+                        <i class="bi bi-clock-history me-2"></i> History Sertifikat
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('admin.user.index') }}" class="nav-link {{ request()->routeIs('admin.user.index') || request()->routeIs('admin.user.create') ? 'active bg-primary text-white' : 'text-dark fw-semibold' }}">
+                        <i class="bi bi-people me-2"></i> Kelola Admin & Akses
+                    </a>
+                </li>
+            @else
+                <li class="nav-item">
+                    <a href="{{ route('admin.user.create') }}" class="nav-link {{ request()->routeIs('admin.user.create') ? 'active bg-primary text-white' : 'text-dark fw-semibold' }}">
+                        <i class="bi bi-person-plus me-2"></i> Buat Akun Admin
+                    </a>
+                </li>
+            @endif
+        </ul>
+        
+        <div class="pt-3 border-top border-dark">
+            <div class="small text-muted mb-2 px-1">Login sebagai: <strong class="text-dark">{{ $currentUserEmail }}</strong></div>
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
-                <button type="submit" class="btn btn-outline-danger w-100 rounded-pill fw-semibold d-flex align-items-center justify-content-center gap-2">
-                    🚪 <span>Logout</span>
+                <button type="submit" class="btn btn-outline-danger w-100 fw-bold rounded-pill">
+                    <i class="bi bi-box-arrow-right me-1"></i> Logout
                 </button>
             </form>
         </div>
