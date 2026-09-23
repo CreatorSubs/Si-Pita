@@ -1,36 +1,71 @@
 <?php
 
-use Illuminate\Database\Migrations\Migration;
-use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\Schema;
+namespace App\Http\Controllers;
 
-return new class extends Migration
+use Illuminate\Http\Request;
+use App\Models\Certificate;
+use Illuminate\Support\Str;
+
+class CertificateController extends Controller
 {
-    public function up(): void
+    public function create()
     {
-        Schema::create('certificates', function (Blueprint $table) {
-            $table->id();
-            $table->string('certificate_number')->unique();
-            $table->string('recipient_name');
-            $table->string('recipient_identity');
-            $table->string('institution')->nullable();
-            $table->string('event_name');
-            $table->string('role')->default('Peserta');
-            $table->date('issue_date');
-            $table->string('template_path')->nullable();
-            $table->integer('pos_name_x')->default(200);
-            $table->integer('pos_name_y')->default(150);
-            $table->integer('pos_number_x')->default(200);
-            $table->integer('pos_number_y')->default(100);
-            $table->integer('pos_qr_x')->default(50);
-            $table->integer('pos_qr_y')->default(300);
-            $table->string('qr_token')->unique();
-            $table->timestamps();
-        });
+        return view('pages.admin.create_certificate');
     }
 
-    public function down(): void
+    public function store(Request $request)
     {
-        Schema::dropIfExists('certificates');
+        // 1. Handle Upload Template (jika ada)
+        $templatePath = null;
+        if ($request->hasFile('template')) {
+            $templatePath = $request->file('template')->store('certificates/templates', 'public');
+        }
+
+        // Ambil prefix & event name dari form dasar
+        $prefix = $request->certificate_number_prefix ?? 'SERT/';
+        $eventName = $request->event_name ?? 'Kegiatan Tanpa Nama';
+        $issueDate = $request->issue_date ?? date('Y-m-d');
+
+        // CASE 1: JIKA ADA DATA PESERTA DARI MODAL GRID / CSV
+        if ($request->has('participants') && is_array($request->participants) && count($request->participants) > 0) {
+            foreach ($request->participants as $index => $p) {
+                // Pastikan nama tidak kosong
+                if (!empty($p['name'])) {
+                    Certificate::create([
+                        'certificate_number' => $prefix . strtoupper(Str::random(5)) . '-' . ($index + 1),
+                        'recipient_name'     => $p['name'],
+                        'recipient_identity' => !empty($p['identity_number']) ? $p['identity_number'] : '-',
+                        'institution'        => $p['agency'] ?? 'Diskominfo',
+                        'event_name'         => $eventName,
+                        'role'               => $p['role'] ?? 'Peserta',
+                        'issue_date'         => $issueDate,
+                        'template_path'      => $templatePath,
+                        'qr_token'           => Str::uuid()->toString(), // Memenuhi constraint unique qr_token
+                    ]);
+                }
+            }
+        } 
+        // CASE 2: JIKA INPUT SATUAN / DARI FORM BIASA
+        else {
+            Certificate::create([
+                'certificate_number' => $prefix . strtoupper(Str::random(6)),
+                'recipient_name'     => $request->recipient_name ?? 'Peserta',
+                'recipient_identity' => $request->recipient_identity ?? '-',
+                'institution'        => $request->institution ?? 'Diskominfo',
+                'event_name'         => $eventName,
+                'role'               => $request->role ?? 'Peserta',
+                'issue_date'         => $issueDate,
+                'template_path'      => $templatePath,
+                'qr_token'           => Str::uuid()->toString(), // Memenuhi constraint unique qr_token
+            ]);
+        }
+
+        return redirect()->route('admin.certificate.create')->with('success', 'Sertifikat berhasil dibuat!');
     }
-};
+
+    public function editor($id = 1)
+    {
+        $certificate = Certificate::find($id);
+        return view('pages.admin.editor_positions', compact('certificate'));
+    }
+}

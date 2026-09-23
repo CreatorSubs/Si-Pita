@@ -10,23 +10,30 @@ use Illuminate\Support\Facades\Auth;
 
 class AdminUserController extends Controller
 {
-    // Cek apakah user adalah owner
+    // Helper untuk cek apakah user adalah Owner
     private function isOwner()
     {
-        // Mendukung sesi auth Laravel atau fallback ke hardcoded email
-        $userEmail = Auth::user() ? Auth::user()->email : session('user_email', 'admin@diskominfo.go.id');
+        $userEmail = Auth::user() ? Auth::user()->email : session('user_email', '');
         return strtolower($userEmail) === 'admin@diskominfo.go.id';
     }
 
-    // Menampilkan Form Buat Akun Admin
+    // Menampilkan Form Buat Akun Admin (Khusus Owner)
     public function create()
     {
+        if (!$this->isOwner()) {
+            abort(403, 'Akses Ditolak: Hanya Owner (admin@diskominfo.go.id) yang dapat membuat akun admin baru.');
+        }
+
         return view('pages.admin.create_user');
     }
 
-    // Menyimpan Akun Admin Baru
+    // Menyimpan Akun Admin Baru (Khusus Owner)
     public function store(Request $request)
     {
+        if (!$this->isOwner()) {
+            abort(403, 'Akses Ditolak: Anda tidak memiliki izin untuk menambah akun admin.');
+        }
+
         $request->validate([
             'name'     => 'required|string|max:255',
             'email'    => 'required|string|email|max:255|unique:users',
@@ -47,17 +54,24 @@ class AdminUserController extends Controller
     // Kelola Semua Akun Admin (Khusus Owner)
     public function index()
     {
+        if (!$this->isOwner()) {
+            abort(403, 'Akses Ditolak: Hanya Owner yang dapat mengelola daftar admin.');
+        }
+
         $users = User::all();
-        $isOwner = $this->isOwner();
+        $isOwner = true;
         return view('pages.admin.users_list', compact('users', 'isOwner'));
     }
 
-    // Toggle Aktif/Nonaktif Akun Admin
+    // Toggle Aktif/Nonaktif Akun Admin (Khusus Owner)
     public function toggleStatus($id)
     {
+        if (!$this->isOwner()) {
+            abort(403, 'Akses Ditolak: Anda tidak memiliki wewenang untuk mengubah status akun.');
+        }
+
         $user = User::findOrFail($id);
         
-        // Jangan biarkan akun owner dinonaktifkan
         if (strtolower($user->email) === 'admin@diskominfo.go.id') {
             return redirect()->back()->with('error', 'Akun Owner utama tidak dapat dinonaktifkan!');
         }
@@ -69,11 +83,11 @@ class AdminUserController extends Controller
         return redirect()->back()->with('success', "Akun {$user->name} berhasil {$statusText}.");
     }
 
-    // View History Pembuatan Sertifikat oleh Admin Lain (Khusus Owner)
+    // View History Pembuatan Sertifikat (Khusus Owner)
     public function history()
     {
         if (!$this->isOwner()) {
-            abort(403, 'Akses ditolak. Fitur ini hanya untuk Owner (admin@diskominfo.go.id).');
+            abort(403, 'Akses Ditolak: Fitur ini hanya untuk Owner (admin@diskominfo.go.id).');
         }
 
         $certificates = Certificate::latest()->get();
