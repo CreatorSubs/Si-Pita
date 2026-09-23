@@ -7,7 +7,7 @@ Route::get('/search', [CertificateController::class, 'search'])->name('certifica
 Route::get('/download/{id}', [CertificateController::class, 'downloadPage'])->name('certificate.download');
 Route::get('/pdf-stream/{id}', [CertificateController::class, 'generatePdf'])->name('certificate.pdf.stream');
 
-Auth::routes();
+Auth::routes(['register' => false]);
 
 Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::get('/dashboard', [CertificateController::class, 'index'])->name('admin.dashboard');
@@ -16,4 +16,6 @@ Route::middleware(['auth'])->prefix('admin')->group(function () {
     Route::post('/certificate/store', [CertificateController::class, 'store'])->name('admin.certificate.store');
     Route::get('/certificate/editor/{id}', [CertificateController::class, 'editor'])->name('admin.certificate.editor');
     Route::post('/certificate/editor/{id}', [CertificateController::class, 'updatePositions'])->name('admin.certificate.update_positions');
+    Route::get('/users/create', [App\Http\Controllers\UserController::class, 'create'])->name('admin.users.create');
+    Route::post('/users/store', [App\Http\Controllers\UserController::class, 'store'])->name('admin.users.store');
 });
