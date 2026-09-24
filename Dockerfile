@@ -27,4 +27,6 @@ RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
 EXPOSE 8080
 
-CMD php artisan config:clear && php artisan cache:clear && php artisan view:clear && php artisan migrate --force && php -S 0.0.0.0:8080 -t public
+CMD php artisan config:clear && php artisan cache:clear && php artisan view:clear
+
+CMD php artisan config:clear && php artisan migrate --force && php -S 0.0.0.0:8080 -t public
