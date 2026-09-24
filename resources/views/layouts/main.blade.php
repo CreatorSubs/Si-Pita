@@ -6,7 +6,7 @@
     <title>Si-Pita</title>
     
     <a href="{{ url('/') }}">
-        <img src="{{ asset('images/diskominfo.webp') }}" alt="Logo Diskominfo" style="height: 40px; width: auto;">
+        <img src="{{ asset('public\images\Diskominfo.webp') }}" alt="Logo Diskominfo" style="height: 40px; width: auto;">
     </a>
 
     <!-- Bootstrap 5 CSS -->
