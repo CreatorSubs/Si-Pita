@@ -64,7 +64,7 @@ Route::post('/logout', function (Request $request) {
 
 
 // ==========================================
-// ROUTE ADMIN & OWNER
+// ROUTE ADMIN & OWNER (DIPROTEKSI MIDDLEWARE AUTH)
 // ==========================================
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     // Kelola Sertifikat
@@ -73,7 +73,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/certificate/editor/{id}', [CertificateController::class, 'editor'])->name('certificate.editor');
     Route::post('/certificate/update-positions/{id}', [CertificateController::class, 'updatePositions'])->name('certificate.update_positions');
     
-    // Route untuk Cek/Lihat Semua Sertifikat (Dapat dipanggil via show_all, check, atau index)
+    // Route untuk Cek/Lihat Semua Sertifikat
     Route::get('/certificate/check', [CertificateController::class, 'showAll'])->name('certificate.show_all');
     Route::get('/certificate/index', [CertificateController::class, 'showAll'])->name('certificate.index');
     Route::get('/certificate/list', [CertificateController::class, 'showAll'])->name('certificate.check');
