@@ -9,12 +9,17 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('certificates', function (Blueprint $table) {
-            $table->id();
-            $table->string('certificate_number')->unique();
-            $table->string('name');
-            $table->string('course');
-            $table->date('issued_date');
-            $table->timestamps();
+        $table->id();
+        $table->string('certificate_number')->unique();
+        $table->string('recipient_name');
+        $table->string('recipient_identity')->nullable();
+        $table->string('institution')->nullable();
+        $table->string('event_name');
+        $table->string('role')->nullable();
+        $table->date('issue_date');
+        $table->string('template_path');
+        $table->string('qr_token')->unique();
+        $table->timestamps();
         });
     }
 
