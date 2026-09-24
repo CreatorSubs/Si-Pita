@@ -54,7 +54,7 @@ class CertificateController extends Controller
                 'event_name'         => $eventName,
                 'role'               => $request->role ?? 'Peserta',
                 'issue_date'         => $issueDate,
-                'template_path'      => $templatePath,
+                'template_path' => $request->input('template_path', 'default-template.png'),
                 'qr_token'           => Str::uuid()->toString(),
             ]);
         }
