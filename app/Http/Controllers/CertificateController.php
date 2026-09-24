@@ -16,10 +16,13 @@ class CertificateController extends Controller
 
     public function store(Request $request)
     {
-        // Handle upload template
+        // Handle upload template dengan aman: 
+        // Jika ada file baru di-upload, simpan. Jika tidak, ambil dari input hidden atau gunakan default.
         $templatePath = null;
         if ($request->hasFile('template')) {
             $templatePath = $request->file('template')->store('certificates/templates', 'public');
+        } else {
+            $templatePath = $request->input('existing_template_path') ?? $request->input('template_path') ?? 'default-template.png';
         }
 
         $prefix = $request->certificate_number_prefix ?? 'SERT/';
@@ -54,7 +57,7 @@ class CertificateController extends Controller
                 'event_name'         => $eventName,
                 'role'               => $request->role ?? 'Peserta',
                 'issue_date'         => $issueDate,
-                'template_path' => $request->input('template_path', 'default-template.png'),
+                'template_path'      => $templatePath,
                 'qr_token'           => Str::uuid()->toString(),
             ]);
         }
