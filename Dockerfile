@@ -1,4 +1,5 @@
-/FROM node:20-alpine AS node-builder
+# Stage 1: Build Vite assets using Node.js
+FROM node:20-alpine AS node-builder
 WORKDIR /app
 COPY . .
 RUN npm install && npm run build
