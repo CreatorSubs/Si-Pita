@@ -1,10 +1,8 @@
-# Stage 1: Build Vite assets using Node.js
-FROM node:20-alpine AS node-builder
+/FROM node:20-alpine AS node-builder
 WORKDIR /app
 COPY . .
 RUN npm install && npm run build
 
-# Stage 2: Production PHP server
 FROM php:8.4-fpm
 
 RUN apt-get update && apt-get install -y \
@@ -18,7 +16,6 @@ WORKDIR /var/www
 
 COPY . .
 
-# Copy compiled frontend assets from Stage 1
 COPY --from=node-builder /app/public/build /var/www/public/build
 
 RUN composer install --no-dev --optimize-autoloader --ignore-platform-req=php
@@ -27,6 +24,4 @@ RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
 EXPOSE 8080
 
-CMD php artisan config:clear && php artisan cache:clear && php artisan view:clear
-
-CMD php artisan config:clear && php artisan migrate --force && php -S 0.0.0.0:8080 -t public
+CMD php artisan config:clear && php artisan cache:clear && php artisan view:clear && php artisan migrate --force && php -S 0.0.0.0:8080 -t public
