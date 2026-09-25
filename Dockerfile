@@ -4,7 +4,7 @@ WORKDIR /app
 COPY . .
 RUN npm install && npm run build
 
-# Stage 2: Production PHP server (Gunakan PHP CLI agar langsung bisa jalan)
+# Stage 2: Production PHP server
 FROM php:8.4-cli
 
 RUN apt-get update && apt-get install -y \
@@ -18,13 +18,16 @@ WORKDIR /var/www
 
 COPY . .
 
-# Copy compiled frontend assets from Stage 1
 COPY --from=node-builder /app/public/build /var/www/public/build
 
 RUN composer install --no-dev --optimize-autoloader --ignore-platform-req=php
 
 RUN chmod -R 777 storage bootstrap/cache
 
+# Berikan izin eksekusi pada start.sh
+COPY start.sh /start.sh
+RUN chmod +x /start.sh
+
 EXPOSE 8080
 
-CMD php artisan config:clear && php artisan cache:clear && php artisan view:clear && (php artisan migrate --force || true) && php -S 0.0.0.0:8080 -t public
+CMD ["/start.sh"]
