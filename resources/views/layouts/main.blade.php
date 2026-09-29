@@ -4,11 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Si-Pita</title>
-    
-    <a href="{{ url('/') }}">
-        <img src="{{ asset('public\images\Diskominfo.webp') }}" alt="Logo Diskominfo" style="height: 40px; width: auto;">
-    </a>
-
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -24,6 +19,7 @@
             border-bottom: 2px solid #000000;
         }
     </style>
+    <link rel="stylesheet" href="{{ asset('si-pita-theme.css') }}">
 </head>
 <body>
 
@@ -35,7 +31,7 @@
                 <button class="btn btn-light border-dark" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas" aria-controls="sidebarOffcanvas">
                     <i class="bi bi-list fs-4"></i>
                 </button>
-                <span class="fs-4 fw-bold text-primary mb-0 ms-2">Si-Pita Admin</span>
+                <a class="si-pita-brand ms-2" href="{{ route('landing') }}">SI - PITA</a>
             </div>
             
             <div>

@@ -4,7 +4,7 @@
             <button class="btn btn-light border-0 shadow-sm" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarMenu" aria-controls="sidebarMenu">
                 ☰
             </button>
-            <a class="navbar-brand fw-bold text-primary" href="{{ route('landing') }}">SI-PITA</a>
+            <a class="navbar-brand si-pita-brand" href="{{ route('landing') }}">SI - PITA</a>
         </div>
         <div>
             @auth

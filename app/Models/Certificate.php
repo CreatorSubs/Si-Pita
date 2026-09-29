@@ -12,7 +12,7 @@ class Certificate extends Model
     protected $fillable = [
         'certificate_number', 'recipient_name', 'recipient_identity',
         'institution', 'event_name', 'role', 'issue_date',
-        'template_path', 'pos_name_x', 'pos_name_y',
+        'template_path', 'pos_name_x', 'pos_name_y', 'pos_event_x', 'pos_event_y',
         'pos_number_x', 'pos_number_y', 'pos_qr_x', 'pos_qr_y', 'qr_token'
     ];
 }

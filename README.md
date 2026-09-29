@@ -57,17 +57,14 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
 
-## Deploy to Railway
+## Local Development
 
-Railway should build this repository with its `Dockerfile`. The container serves Laravel from `public/` and listens on Railway's injected `PORT`; do not set a fixed port or a separate start command.
+Set database credentials in the untracked `.env` file, then run these commands in separate terminals:
 
-Add these variables to the Railway service:
+```sh
+php artisan serve --host=127.0.0.1 --port=8000
+npm.cmd run dev -- --host=127.0.0.1
+```
 
-- `APP_ENV=production`, `APP_DEBUG=false`, `APP_KEY`, `APP_URL`, and a strong `OWNER_PASSWORD`
-- `DB_CONNECTION=mysql`, `DB_HOST`, `DB_PORT`, `DB_DATABASE`, `DB_USERNAME`, and `DB_PASSWORD` copied from the Aiven service
-- `SESSION_DRIVER=database`, `CACHE_STORE=database`, `LOG_CHANNEL=stderr`, and `FILESYSTEM_DISK=local`
-- If Aiven requires its CA certificate, set `MYSQL_ATTR_SSL_CA_BASE64` to the base64-encoded contents of Aiven's CA certificate. The container writes it to `/tmp` and configures PDO to use it.
+Open `http://127.0.0.1:8000` in your browser. Do not commit `.env` or its credentials.
 
-Generate `APP_KEY` once with `php artisan key:generate --show` and keep it unchanged between deploys. After the first deploy, run `php artisan migrate --force` once from the Railway service shell. If the Owner account does not exist yet, run `php artisan db:seed --force` once with `OWNER_PASSWORD` set. Migrations and seeders are intentionally not run automatically on every container start.
-
-Certificate templates use Laravel's local public disk. Attach a Railway volume at `/var/www/html/storage/app/public` so uploaded templates survive container rebuilds. Aiven credentials are set in Railway and are not copied into the Docker image; `.dockerignore` excludes local `.env` files.

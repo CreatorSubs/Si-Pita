@@ -8,6 +8,19 @@
         <form action="{{ route('admin.certificate.store') }}" method="POST" enctype="multipart/form-data" id="certForm">
             @csrf
 
+            <input type="hidden" name="pos_number_x" id="pos_number_x" value="{{ old('pos_number_x', 200) }}">
+            <input type="hidden" name="pos_number_y" id="pos_number_y" value="{{ old('pos_number_y', 40) }}">
+            <input type="hidden" name="pos_name_x" id="pos_name_x" value="{{ old('pos_name_x', 250) }}">
+            <input type="hidden" name="pos_name_y" id="pos_name_y" value="{{ old('pos_name_y', 220) }}">
+            <input type="hidden" name="pos_event_x" id="pos_event_x" value="{{ old('pos_event_x', 250) }}">
+            <input type="hidden" name="pos_event_y" id="pos_event_y" value="{{ old('pos_event_y', 258) }}">
+            <input type="hidden" name="pos_qr_x" id="pos_qr_x" value="{{ old('pos_qr_x', 680) }}">
+            <input type="hidden" name="pos_qr_y" id="pos_qr_y" value="{{ old('pos_qr_y', 440) }}">
+
+            @if ($errors->any())
+                <div class="alert alert-danger" role="alert">{{ $errors->first() }}</div>
+            @endif
+
             <div class="row g-4 align-items-center">
                 <!-- SISI KIRI: FORM INPUTS -->
                 <div class="col-lg-5 col-md-6 d-flex flex-column gap-3">
@@ -41,7 +54,7 @@
 
                     <!-- Button Atur Posisi Teks & QR -->
                     <div>
-                        <a href="{{ route('admin.certificate.editor', 1) }}" onclick="saveDraftToSession(event, this.href)" class="btn btn-outline-secondary border-2 border-dark rounded-pill w-100 py-2 fw-bold shadow-sm">
+                        <a href="{{ route('admin.certificate.editor.draft') }}" onclick="saveDraftToSession(event, this.href)" class="btn btn-outline-secondary border-2 border-dark rounded-pill w-100 py-2 fw-bold shadow-sm">
                             <i class="bi bi-arrows-move me-1"></i> Text & QR Positions
                         </a>
                     </div>
@@ -152,6 +165,11 @@
         const savedEvent = sessionStorage.getItem('draft_event_name');
         const savedPrefix = sessionStorage.getItem('draft_cert_prefix');
 
+        ['pos_number_x', 'pos_number_y', 'pos_name_x', 'pos_name_y', 'pos_event_x', 'pos_event_y', 'pos_qr_x', 'pos_qr_y'].forEach(function(key) {
+            const savedPosition = sessionStorage.getItem(key);
+            if (savedPosition !== null) document.getElementById(key).value = savedPosition;
+        });
+
         if (savedEvent) document.getElementById('eventName').value = savedEvent;
         if (savedPrefix) document.getElementById('certNumberPrefix').value = savedPrefix;
         if (savedImg) {
@@ -160,6 +178,11 @@
             img.classList.remove('d-none');
             document.getElementById('previewPlaceholder').classList.add('d-none');
             document.getElementById('uploadLabelText').textContent = "Gambar Terpilih (Draft)";
+            restoreTemplateFile(
+                savedImg,
+                sessionStorage.getItem('draft_cert_image_name') || 'certificate-template.png',
+                sessionStorage.getItem('draft_cert_image_type') || 'image/png'
+            );
         }
 
         // Restore tabel data peserta
@@ -178,6 +201,8 @@
         const file = event.target.files[0];
         if (file) {
             document.getElementById('uploadLabelText').textContent = file.name;
+            sessionStorage.setItem('draft_cert_image_name', file.name);
+            sessionStorage.setItem('draft_cert_image_type', file.type || 'image/png');
             const reader = new FileReader();
             reader.onload = function(e) {
                 const img = document.getElementById('certPreview');
@@ -192,14 +217,48 @@
 
     function saveDraftToSession(e, targetUrl) {
         e.preventDefault();
-        saveParticipantsToSession();
-        const eventName = document.getElementById('eventName').value;
-        const certPrefix = document.getElementById('certNumberPrefix').value;
-        
-        if (eventName) sessionStorage.setItem('draft_event_name', eventName);
-        if (certPrefix) sessionStorage.setItem('draft_cert_prefix', certPrefix);
+        const continueToEditor = function() {
+            saveParticipantsToSession();
+            const eventName = document.getElementById('eventName').value;
+            const certPrefix = document.getElementById('certNumberPrefix').value;
 
-        window.location.href = targetUrl;
+            if (eventName) sessionStorage.setItem('draft_event_name', eventName);
+            if (certPrefix) sessionStorage.setItem('draft_cert_prefix', certPrefix);
+
+            window.location.href = targetUrl;
+        };
+
+        const selectedFile = document.getElementById('templateInput').files[0];
+        if (!selectedFile) {
+            continueToEditor();
+            return;
+        }
+
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            sessionStorage.setItem('draft_cert_image', event.target.result);
+            sessionStorage.setItem('draft_cert_image_name', selectedFile.name);
+            sessionStorage.setItem('draft_cert_image_type', selectedFile.type || 'image/png');
+            continueToEditor();
+        };
+        reader.onerror = function() {
+            alert('File design gagal dibaca. Coba pilih file lagi.');
+        };
+        reader.readAsDataURL(selectedFile);
+    }
+
+    function restoreTemplateFile(dataUrl, fileName, fileType) {
+        const [metadata, encodedData] = dataUrl.split(',');
+        if (!encodedData) return;
+
+        const binary = atob(encodedData);
+        const bytes = new Uint8Array(binary.length);
+        for (let index = 0; index < binary.length; index++) bytes[index] = binary.charCodeAt(index);
+
+        const file = new File([bytes], fileName, { type: fileType || metadata.match(/data:(.*?);base64/)?.[1] || 'image/png' });
+        const transfer = new DataTransfer();
+        transfer.items.add(file);
+        document.getElementById('templateInput').files = transfer.files;
     }
 
     function saveParticipantsToSession() {

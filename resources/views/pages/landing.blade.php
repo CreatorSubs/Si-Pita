@@ -51,13 +51,14 @@
             box-shadow: 5px 5px 0px #000000;
         }
     </style>
+    <link rel="stylesheet" href="{{ asset('si-pita-theme.css') }}">
 </head>
 <body>
 
     <!-- Header / Navbar Publik -->
     <nav class="navbar navbar-landing px-4 py-3">
         <div class="container-fluid d-flex justify-content-between align-items-center">
-            <span class="fs-3 fw-extrabold text-primary fw-bold">Si-Pita</span>
+            <a class="si-pita-brand" href="{{ route('landing') }}">SI - PITA</a>
             <a href="{{ route('login') }}" class="btn btn-outline-dark rounded-pill fw-bold border-2">
                 <i class="bi bi-box-arrow-in-right me-1"></i> Sign In / Login
             </a>

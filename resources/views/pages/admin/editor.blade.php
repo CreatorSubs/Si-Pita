@@ -25,9 +25,19 @@
             </div>
 
             <!-- Drag Element: Nama -->
-            <div id="drag-name" class="draggable position-absolute p-2 bg-primary bg-opacity-75 rounded fw-bold text-white fs-5 user-select-none shadow-sm" 
-                 style="cursor: move; top: {{ $certificate->pos_name_y }}px; left: {{ $certificate->pos_name_x }}px;">
+              <div id="drag-name" class="draggable position-absolute p-2 bg-primary bg-opacity-75 rounded fw-bold text-white user-select-none shadow-sm" 
+                  style="cursor: move; top: {{ $certificate->pos_name_y }}px; left: {{ $certificate->pos_name_x }}px; font-size: 18px;">
                 {{ $certificate->recipient_name }}
+            </div>
+
+            <div class="certificate-data-preview position-absolute text-dark" style="top: {{ $certificate->pos_name_y + 60 }}px; left: {{ $certificate->pos_name_x }}px; font-size: 13px;">Peran: {{ $certificate->role ?: 'Peserta' }}</div>
+            <div class="certificate-data-preview position-absolute text-dark" style="top: {{ $certificate->pos_name_y + 82 }}px; left: {{ $certificate->pos_name_x }}px; font-size: 13px;">Instansi: {{ $certificate->institution ?: '-' }}</div>
+            <div class="certificate-data-preview position-absolute text-dark" style="top: {{ $certificate->pos_name_y + 104 }}px; left: {{ $certificate->pos_name_x }}px; font-size: 13px;">Tanggal terbit: {{ \Carbon\Carbon::parse($certificate->issue_date)->format('d F Y') }}</div>
+
+            <!-- Drag Element: Kegiatan -->
+            <div id="drag-event" class="draggable position-absolute p-2 bg-success bg-opacity-75 rounded fw-bold text-white user-select-none shadow-sm" 
+                 style="cursor: move; top: {{ $certificate->pos_event_y }}px; left: {{ $certificate->pos_event_x }}px;">
+                {{ $certificate->event_name }}
             </div>
 
             <!-- Drag Element: QR Code -->
@@ -44,6 +54,8 @@
             <input type="hidden" name="pos_number_y" id="pos_number_y" value="{{ $certificate->pos_number_y }}">
             <input type="hidden" name="pos_name_x" id="pos_name_x" value="{{ $certificate->pos_name_x }}">
             <input type="hidden" name="pos_name_y" id="pos_name_y" value="{{ $certificate->pos_name_y }}">
+            <input type="hidden" name="pos_event_x" id="pos_event_x" value="{{ $certificate->pos_event_x }}">
+            <input type="hidden" name="pos_event_y" id="pos_event_y" value="{{ $certificate->pos_event_y }}">
             <input type="hidden" name="pos_qr_x" id="pos_qr_x" value="{{ $certificate->pos_qr_x }}">
             <input type="hidden" name="pos_qr_y" id="pos_qr_y" value="{{ $certificate->pos_qr_y }}">
 
@@ -66,7 +78,9 @@ document.addEventListener('DOMContentLoaded', function () {
         let isDragging = false;
         let startX, startY, initialLeft, initialTop;
 
-        elem.addEventListener('mousedown', function (e) {
+        elem.addEventListener('pointerdown', function (e) {
+            e.preventDefault();
+            elem.setPointerCapture(e.pointerId);
             isDragging = true;
             startX = e.clientX;
             startY = e.clientY;
@@ -75,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function () {
             elem.style.zIndex = 1000;
         });
 
-        document.addEventListener('mousemove', function (e) {
+        elem.addEventListener('pointermove', function (e) {
             if (!isDragging) return;
 
             const dx = e.clientX - startX;
@@ -101,16 +115,24 @@ document.addEventListener('DOMContentLoaded', function () {
             } else if (elem.id === 'drag-name') {
                 document.getElementById('pos_name_x').value = newLeft;
                 document.getElementById('pos_name_y').value = newTop;
+                document.querySelectorAll('.certificate-data-preview').forEach((detail, index) => {
+                    detail.style.left = newLeft + 'px';
+                    detail.style.top = (newTop + [60, 82, 104][index]) + 'px';
+                });
+            } else if (elem.id === 'drag-event') {
+                document.getElementById('pos_event_x').value = newLeft;
+                document.getElementById('pos_event_y').value = newTop;
             } else if (elem.id === 'drag-qr') {
                 document.getElementById('pos_qr_x').value = newLeft;
                 document.getElementById('pos_qr_y').value = newTop;
             }
         });
 
-        document.addEventListener('mouseup', function () {
+        elem.addEventListener('pointerup', function (e) {
             if (isDragging) {
                 isDragging = false;
                 elem.style.zIndex = 'auto';
+                if (elem.hasPointerCapture(e.pointerId)) elem.releasePointerCapture(e.pointerId);
             }
         });
     });

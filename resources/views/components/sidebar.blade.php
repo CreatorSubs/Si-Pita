@@ -6,7 +6,7 @@
 <div class="offcanvas offcanvas-start" tabindex="-1" id="sidebarOffcanvas" aria-labelledby="sidebarOffcanvasLabel" style="width: 290px;">
     <div class="offcanvas-header border-bottom border-dark">
         <div>
-            <h5 class="offcanvas-title fw-bold text-primary mb-0" id="sidebarOffcanvasLabel">Si-Pita Admin</h5>
+            <h5 class="offcanvas-title si-pita-brand mb-0" id="sidebarOffcanvasLabel">SI - PITA</h5>
             @if($isOwner)
                 <small class="badge bg-danger text-white rounded-pill mt-1">👑 Mode Owner / Super Admin</small>
             @else
@@ -50,12 +50,26 @@
         
         <div class="pt-3 border-top border-dark">
             <div class="small text-muted mb-2 px-1">Login sebagai: <br><strong class="text-dark">{{ $currentUserEmail }}</strong></div>
-            <form action="{{ route('logout') }}" method="POST">
-                @csrf
-                <button type="submit" class="btn btn-outline-danger w-100 fw-bold rounded-pill">
-                    <i class="bi bi-box-arrow-right me-1"></i> Logout
-                </button>
-            </form>
+            <button type="button" class="btn btn-outline-danger w-100 fw-bold rounded-pill" data-bs-toggle="modal" data-bs-target="#logoutConfirmModal">
+                <i class="bi bi-box-arrow-right me-1"></i> Logout
+            </button>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="logoutConfirmModal" tabindex="-1" aria-labelledby="logoutConfirmTitle" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content border-0 rounded-4 shadow">
+            <div class="modal-body px-4 py-4 text-center">
+                <h2 class="fs-5 fw-semibold mb-4" id="logoutConfirmTitle">Logout?</h2>
+                <form id="logoutConfirmForm" action="{{ route('logout') }}" method="POST">
+                    @csrf
+                </form>
+                <div class="d-flex justify-content-center gap-3">
+                    <button type="button" class="btn btn-primary rounded-2 px-4" data-bs-dismiss="modal">Tidak</button>
+                    <button type="submit" form="logoutConfirmForm" class="btn btn-primary rounded-2 px-4">Ya</button>
+                </div>
+            </div>
         </div>
     </div>
 </div>

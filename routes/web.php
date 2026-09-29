@@ -14,8 +14,9 @@ Route::get('/', function () {
     return view('pages.landing');
 })->name('landing');
 
-Route::get('/certificate/search', [CertificateController::class, 'showAll'])->name('certificate.search');
-Route::get('/cek-sertifikat', [CertificateController::class, 'showAll'])->name('public.certificate.check');
+Route::get('/certificate/search', [CertificateController::class, 'showPublic'])->name('certificate.search');
+Route::get('/cek-sertifikat', [CertificateController::class, 'showPublic'])->name('public.certificate.check');
+Route::get('/certificate/{token}/download', [CertificateController::class, 'downloadPublic'])->name('public.certificate.download');
 
 
 // ==========================================
@@ -70,6 +71,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     // Kelola Sertifikat
     Route::get('/certificate/create', [CertificateController::class, 'create'])->name('certificate.create');
     Route::post('/certificate/store', [CertificateController::class, 'store'])->name('certificate.store');
+    Route::get('/certificate/editor/draft', [CertificateController::class, 'draftEditor'])->name('certificate.editor.draft');
     Route::get('/certificate/editor/{id}', [CertificateController::class, 'editor'])->name('certificate.editor');
     Route::post('/certificate/update-positions/{id}', [CertificateController::class, 'updatePositions'])->name('certificate.update_positions');
     
