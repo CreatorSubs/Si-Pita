@@ -29,7 +29,18 @@ php artisan storage:link --force || true
 DB_TARGET="${DB_HOST:-${MYSQLHOST:-}}"
 if [ -n "$DB_TARGET" ] || [ -n "${MYSQL_URL:-}" ] || [ -n "${DB_URL:-}" ]; then
     echo "=== Running database migrations ==="
-    php artisan migrate --force || echo "Warning: Migration failed. Please verify DB connection settings."
+    MIGRATED=0
+    for i in 1 2 3 4 5; do
+        if php artisan migrate --force; then
+            MIGRATED=1
+            break
+        fi
+        echo "Database not ready yet, retrying in 2 seconds (attempt $i/5)..."
+        sleep 2
+    done
+    if [ "$MIGRATED" -eq 0 ]; then
+        echo "Warning: Migration failed after retries. Please verify DB connection settings."
+    fi
 fi
 
 # Seed Owner account if OWNER_PASSWORD is set and DB is configured

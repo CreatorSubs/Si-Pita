@@ -10,7 +10,7 @@ return new class extends Migration
     {
         Schema::create('certificates', function (Blueprint $table) {
             $table->id();
-            $table->string('created_by')->nullable()->after('id');
+            $table->string('created_by')->nullable();
             $table->string('certificate_number')->unique();
             $table->string('recipient_name');
             $table->string('recipient_identity')->nullable();
